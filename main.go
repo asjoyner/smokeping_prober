@@ -121,7 +121,7 @@ func (s *smokePingers) start() {
 	splay := time.Duration(s.maxInterval.Nanoseconds() / int64(len(s.started)))
 	for _, pr := range s.started {
 		pinger := pr.pinger
-		logger.Info("Starting prober", "address", pinger.Addr(), "interval", pinger.Interval, "size_bytes", pinger.Size, "source_address", pinger.Source)
+		logger.Info("Starting prober", "address", pinger.Addr(), "interval", pinger.Interval, "size_bytes", pinger.Size, "source_address", pinger.Source, "interface", pinger.InterfaceName)
 		s.g.Go(
 			func() error {
 				err := pinger.Run()
@@ -132,6 +132,7 @@ func (s *smokePingers) start() {
 						"interval", pinger.Interval,
 						"size_bytes", pinger.Size,
 						"source_address", pinger.Source,
+						"interface", pinger.InterfaceName,
 						"err", err,
 					)
 				}
@@ -205,6 +206,7 @@ func (s *smokePingers) prepare(hosts *[]string, interval *time.Duration, privile
 			pinger.Size = packetSize
 			pinger.SetTrafficClass(targetGroup.ToS)
 			pinger.Source = targetGroup.Source
+			pinger.InterfaceName = targetGroup.Interface
 			if targetGroup.Protocol == "icmp" {
 				pinger.SetPrivileged(true)
 			}
