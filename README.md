@@ -55,9 +55,15 @@ targets:
   protocol: icmp # One of icmp, udp. Default: icmp (Requires privileged operation)
   size: 56 # Packet data size in bytes. Default 56 (Range: 24 - 65535)
   source: 127.0.1.1 # Souce IP address to use. Default: None (automatic selection)
+  interface: wan1 # Send via this network interface (IP_PKTINFO), ignoring the main routing table's choice of egress. Default: None
 ```
 
 In each host group the `interval`, `network`, and `protocol` are optional.
+
+`interface` pins the probes to one egress interface, e.g. to measure a backup WAN
+that is not the current default route. The kernel still picks the next hop from
+the routes on that interface, so no policy routing is needed. It works with both
+`icmp` and `udp` protocols.
 
 The interval Duration is in [Go time.ParseDuration()](https://golang.org/pkg/time/#ParseDuration) syntax.
 
